@@ -1,0 +1,73 @@
+#include <ESP8266WiFi.h>
+#include "wifi.h"
+#include "atuadores.h"
+const char* nome_rede = "";
+const char* senha = "";
+
+long unsigned tempo_reconexao = 2000;
+int vezes_reconexao = 1;
+long unsigned ultima_reconexao = 0;
+
+void iniciar_wifi(){
+    WiFi.mode(WIFI_STA);
+}
+
+void conectar_wifi(){
+    WiFi.begin(nome_rede, senha);
+    Serial.printf("Tentando conectar a rede...");
+    while (WiFi.status() != WL_CONNECTED) {
+        Serial.print(". ");
+        delay(300);
+    }
+    switch (WiFi.status()){
+        case WL_CONNECTED:
+            Serial.print("Conectado! IP: ");
+            Serial.println(WiFi.localIP());
+            break;
+        case WL_CONNECT_FAILED:
+            Serial.printf("Falha ao conectar a rede...");
+            break;
+        default:
+            Serial.print("Erro: ");
+            Serial.println(WiFi.status());
+
+    }
+}
+
+void reconexao(){
+    
+    unsigned long agora = millis();
+    if (agora - ultima_reconexao >= tempo_reconexao * vezes_reconexao){
+        conectar_wifi();
+        ultima_reconexao = millis();
+        if (vezes_reconexao < 20) vezes_reconexao++;
+    }
+    
+
+}
+
+int checar_wifi(){
+        switch (WiFi.status()){
+        case WL_CONNECTED:
+            Serial.printf("Conectado!");
+            return 0;
+        case WL_CONNECT_FAILED:
+            Serial.printf("Falha ao conectar a rede...");
+            led_btin_erro();
+            return 1;
+        case WL_DISCONNECTED:
+            Serial.printf("Rede desconectada...");
+            led_btin_erro();
+            return 2;
+        case WL_NO_SSID_AVAIL:
+            Serial.printf("Rede não existente...");
+            led_btin_erro();
+            return 2;
+        default:
+            Serial.print("Erro: ");
+            Serial.println(WiFi.status());
+            led_btin_erro();
+            return 3;
+
+    }
+}
