@@ -15,7 +15,6 @@ void setup() {
 }
 
 void loop() {
-  int check = checar_wifi();
   if (checar_wifi() == 0){
     Serial.printf("Rede conectada, prosseguindo com rotina...");
     wifi_conectado = true;
@@ -23,7 +22,7 @@ void loop() {
       wifi_conectado = false;
       conectar_wifi();
   }
-  led_btin_wifi(check);
+  led_btin_wifi(wifi_conectado);
   Serial.printf("Rotina!");
   delay(100);
   yield();

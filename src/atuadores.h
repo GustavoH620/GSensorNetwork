@@ -9,7 +9,7 @@
 
 //a
 void config_gpio();
-void led_btin_erro();
+void led_btin_piscar(int m);
 void led_btin_wifi(bool wifi);
 
 #endif
