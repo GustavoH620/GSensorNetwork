@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include "wifi.h"
 #include "atuadores.h"
-const char* nome_rede = "Pedro";
-const char* senha = "B856E97E0";
+const char* nome_rede = "";
+const char* senha = "";
 
 long unsigned tempo_reconexao = 2000;
 int vezes_reconexao = 1;
@@ -16,7 +16,7 @@ void conectar_wifi(){
     WiFi.begin(nome_rede, senha);
     Serial.printf("Tentando conectar a rede...");
     while (WiFi.status() != WL_CONNECTED) {
-        led_btin_piscar(5);
+        led_btin_piscar(2);
         Serial.print(". ");
         delay(300);
     }
