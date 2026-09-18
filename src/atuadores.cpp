@@ -20,6 +20,7 @@ void config_gpio() {
     pinMode(BUZZER, OUTPUT);
     pinMode(LED_BTN, OUTPUT);
     pinMode(BTN_INTR, INPUT_PULLUP);
+    pinMode(A0, INPUT);
     attachInterrupt(digitalPinToInterrupt(BTN_INTR), f_btn_intr, FALLING); 
 
 }

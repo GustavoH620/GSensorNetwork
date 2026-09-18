@@ -2,9 +2,10 @@
 #include "wifi.h"
 #include "atuadores.h"
 #include "mqtt.h"
+#include "sensores.h"
 
 bool wifi_conectado = false;
-
+unsigned long u_tempo_luminosidade;
 
 void setup() {
 
@@ -27,8 +28,14 @@ void loop() {
       conectar_wifi();
   }
   led_btin_wifi(wifi_conectado);
-  Serial.printf("Rotina!");
+  //Serial.println("Rotina!");
+  unsigned long agora = millis();
+  if (agora - u_tempo_luminosidade > 1000){
+      state_machine_luminosidade();
+      u_tempo_luminosidade = agora;
+  } 
   check_reconectar_mqtt();
   buzzer();
   yield();
+  
 }
