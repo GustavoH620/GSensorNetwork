@@ -7,7 +7,7 @@ const char* topico_alarme = "gSN/alarme";
 const int porta_mqtt = 1883;
 unsigned long tempo_anterior_mqtt = 0;
 String clientId = "G_ESP8266" + String (ESP.getChipId(), HEX) + "-" + String(random(1000, 9999));
-
+String nome_comodo = "escritório";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -58,5 +58,7 @@ void publicar_alarme(bool m){
         client.publish(topico_alarme, "0");
     }
 }
+
+void publicar_dados(String topico, int dados);
 
 

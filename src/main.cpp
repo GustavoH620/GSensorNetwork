@@ -11,6 +11,7 @@ void setup() {
 
   Serial.begin(74880);
   config_gpio();
+  configurar_gpio_sensores();
   iniciar_wifi();
   conectar_wifi();
   iniciar_mqtt();
@@ -29,11 +30,8 @@ void loop() {
   }
   led_btin_wifi(wifi_conectado);
   //Serial.println("Rotina!");
-  unsigned long agora = millis();
-  if (agora - u_tempo_luminosidade > 1000){
-      state_machine_luminosidade();
-      u_tempo_luminosidade = agora;
-  } 
+  state_machine_luminosidade();
+  state_machine_temperatura();
   check_reconectar_mqtt();
   buzzer();
   yield();
