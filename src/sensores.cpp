@@ -1,4 +1,6 @@
 #include "sensores.h"
+#include "atuadores.h"
+#include "mqtt.h"
 #include <Arduino.h>
 #include <gpio.h>
 #include "DHT.h"
@@ -22,14 +24,30 @@ float media_humidade = 0;
 static unsigned long u_leitura_tu = 0;
 int n_leitura_temp = 0;
 
+//Presença
+#define PINO_PIR 16 //D0
+bool ultimo_estado = false;
+float tempo_intr_anterior = 0;
+extern bool alarme_estado;
+
+void IRAM_ATTR f_presenca_intr(){
+    if (millis() - tempo_intr_anterior > 400){
+        tempo_intr_anterior = millis();
+        alarme_estado = !alarme_estado;
+        publicar_alarme(alarme_estado);
+        digitalWrite(LED_BTN, alarme_estado);
+    }
+}
 
 
 DHT dht(PINO_DHT, DHT22);
 
 
 void configurar_gpio_sensores(){
-    pinMode(A0, INPUT);
-    pinMode(14, INPUT);
+    pinMode(PINO_LDR, INPUT);
+    pinMode(PINO_DHT, INPUT);
+    pinMode(PINO_PIR, INPUT);
+    attachInterrupt(digitalPinToInterrupt(PINO_PIR), f_presenca_intr, RISING); 
     dht.begin();
 }
 
@@ -70,14 +88,14 @@ void state_machine_temperatura(){
                 u_leitura_tu = millis();
                 leitura_temperatura = dht.readTemperature();
                 leitura_humidade = dht.readHumidity();
-                n_leitura_temp++;
                 if (isnan(leitura_temperatura) || isnan(leitura_humidade)){
                     Serial.println("Leitura falhou");
                     break;
                 }
+                n_leitura_temp++;
                 media_temperatura += leitura_temperatura;
                 media_humidade += leitura_humidade;
-                if (n_leitura_temp >= 9){
+                if (n_leitura_temp >= 10){
                     estado_leitura_temperatura = MEDIA_LEITURA;
                     break;
                 }
@@ -106,4 +124,6 @@ void state_machine_temperatura(){
     }
 
 }
+
+
 
